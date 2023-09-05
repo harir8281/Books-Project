@@ -1,0 +1,14 @@
+.app-container {
+  display: flex;
+  justify-content: space-between; /* This will create space between the left and right panels */
+}
+
+.left-panel {
+  flex: 1; 
+  padding: 20px; 
+}
+
+.right-panel {
+  flex: 1; 
+  padding: 20px; 
+}
