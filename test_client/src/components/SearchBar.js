@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import './SearchBar.css'; // Import your CSS file
+import React, { useState } from "react";
+import "./SearchBar.css";
 
 function SearchBar({ onSearch }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
     onSearch(searchQuery);
@@ -15,9 +15,11 @@ function SearchBar({ onSearch }) {
         placeholder="Search books..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="search-input" // Apply a class to the input
+        className="search-input"
       />
-      <button onClick={handleSearch} className="search-button">Search</button> {/* Apply a class to the button */}
+      <button onClick={handleSearch} className="search-button">
+        Search
+      </button>
     </div>
   );
 }

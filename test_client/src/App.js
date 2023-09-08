@@ -9,12 +9,13 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(5);
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getBooks = async (page) => {
-    // Modify your API request to include the search query
     try {
-      const response = await axios.get(`http://localhost:5001/api/books?page=${page}&limit=${limit}&search=${searchQuery}`);
+      const response = await axios.get(
+        `http://localhost:5001/api/books?page=${page}&limit=${limit}&search=${searchQuery}`
+      );
       console.log("Books API Response:", response.data);
       setBooks(response.data.books);
       setCurrentPage(response.data.currentPage);
@@ -26,7 +27,7 @@ function App() {
 
   useEffect(() => {
     getBooks(currentPage);
-  }, [currentPage, searchQuery]); // Add searchQuery to the dependency array
+  }, [currentPage, searchQuery]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -34,12 +35,12 @@ function App() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to the first page when a new search is performed
+    setCurrentPage(1);
   };
 
   return (
     <div>
-      <SearchBar onSearch={handleSearch} /> {/* Include the SearchBar component */}
+      <SearchBar onSearch={handleSearch} />
       <BooksList books={books} />
       <div className="pagination">
         <button
