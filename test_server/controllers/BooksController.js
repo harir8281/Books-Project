@@ -1,11 +1,16 @@
 const Book = require("../models/BookModel");
 const asyncHandler = require("express-async-handler");
+const fs = require("fs");
+const path = require("path");
 
 const addBooks = asyncHandler(async (req, res) => {
   try {
-    const books = req.body;
+    const filePath = path.join(__dirname, "../book.json");
+    const fileData = fs.readFileSync(filePath, "utf-8");
+    const books = JSON.parse(fileData);
+
     await Book.insertMany(books);
-    res.json({ message: "Books inserted successfully" });
+    res.json({ message: "Books inserted successfully", data: books });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -13,24 +18,31 @@ const addBooks = asyncHandler(async (req, res) => {
 });
 
 const getBooks = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const searchQuery = req.query.search || "";
+
   try {
-    const { title, shortDescription, longDescription, status, page, limit } =
-      req.query;
+    const skip = (page - 1) * limit;
 
-    const query = {
-      title: new RegExp(title, "i"),
-      shortDescription: new RegExp(shortDescription, "i"),
-      longDescription: new RegExp(longDescription, "i"),
-      status: new RegExp(status, "i"),
+    const searchFilter = {
+      $or: [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { shortDescription: { $regex: searchQuery, $options: "i" } },
+        { longDescription: { $regex: searchQuery, $options: "i" } },
+        { status: { $regex: searchQuery, $options: "i" } },
+      ],
     };
 
-    const options = {
-      skip: (page - 1) * limit,
-      limit: parseInt(limit),
-    };
+    const books = await Book.find(searchFilter).skip(skip).limit(limit);
 
-    const books = await Book.find(query, null, options);
-    res.json(books);
+    const totalCount = await Book.countDocuments(searchFilter);
+
+    res.json({
+      books,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
